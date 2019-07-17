@@ -1,0 +1,15 @@
+{
+  "private": true,
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  },
+  "scripts": {
+    "prettier": "prettier --write src/*.js"
+  },
+  "devDependencies": {
+    "prettier": "^1.18.2",
+    "uglify-es": "^3.3.9"
+  }
+}

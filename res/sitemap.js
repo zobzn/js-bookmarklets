@@ -1,0 +1,1 @@
+!function(o){o.href="//"+o.host+"/sitemap.xml"}(location);

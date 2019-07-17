@@ -1,0 +1,1 @@
+!function(o){o.href="https://webcache.googleusercontent.com/search?q=cache:"+encodeURIComponent(o.protocol+"//"+o.host+o.pathname+o.search)}(location);
