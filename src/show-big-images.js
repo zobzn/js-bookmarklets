@@ -1,3 +1,10 @@
+/**
+ * @todo jest
+ * @todo eslint
+ * @todo picture > source[srcset]
+ * @todo img[srcset]
+ * @todo url() in stylesheets
+ */
 (document => {
   const imagesQueue = new Set();
   const imagesSuccess = new Set();
@@ -7,6 +14,48 @@
   const previewWidth = 200;
   const previewHeight = 200;
   const imageExtensionsRegExp = /(?:image\/|\.)(gif|jpg|jpeg|png|webp|tiff|svg)(?:\?|\#|$)/i;
+
+  function xhrresponseheader(surl) {
+    var xhr = new XMLHttpRequest();
+    xhr.open("HEAD", surl);
+    //xhr.withCredentials = false;
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        contenttype = xhr.getResponseHeader("Content-Type");
+        console.log("Content Type (XHR): ", contenttype);
+      }
+    };
+    xhr.send();
+  }
+
+  function fetchresponseheader(surl) {
+    fetch(surl, { method: "HEAD" }).then(function(response) {
+      contenttype = response.headers.get("content-type");
+      console.log("Content Type (FETCH): ", contenttype);
+    });
+  }
+
+  (() => {
+    // const sheets = document.styleSheets;
+    // for (var i in sheets) {
+    //   var rules = sheets[i].rules || sheets[i].cssRules;
+    //   for (var r in rules) {
+    //     console.log(rules[r]);
+    //   }
+    // }
+    // return result;
+
+    [...document.styleSheets].forEach(sheet => {
+      let rules = [];
+      try {
+        rules = [...(sheet.rules || sheet.cssRules)];
+      } catch (e) {}
+
+      rules.forEach(rule => {
+        if (rule.cssText) console.log(rule.cssText);
+      });
+    });
+  })();
 
   const getImageExtension = src => {
     const ext = src.match(imageExtensionsRegExp);

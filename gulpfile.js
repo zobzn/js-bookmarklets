@@ -3,7 +3,7 @@ const terser = require("gulp-terser");
 
 function compile() {
   return gulp
-    .src("./src/**/*.js")
+    .src(["./src/**/*.js", "!./**/*.test.js"])
     .pipe(
       terser({
         mangle: true
