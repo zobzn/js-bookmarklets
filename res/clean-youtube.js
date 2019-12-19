@@ -1,1 +1,0 @@
-!function(){for(var e,o=function(e){e&&e.parentNode.removeChild(e)};e=document.querySelector(".ytp-ce-element-show");)o(e)}();
