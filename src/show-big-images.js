@@ -165,24 +165,21 @@ const enqueue = src => {
   }
 };
 
-false &&
-  [...document.querySelectorAll("img[src]")].forEach(element => {
-    enqueue(element.getAttribute("src"));
-  });
+[...document.querySelectorAll("img[src]")].forEach(element => {
+  enqueue(element.getAttribute("src"));
+});
 
-false &&
-  [...document.querySelectorAll('[style*="url("]')].forEach(element => {
-    const style = element.getAttribute("style");
-    const match = style.match(/url\(['"]([^)]+)['"]\)/);
-    match && enqueue(match[1]);
-  });
+[...document.querySelectorAll('[style*="url("]')].forEach(element => {
+  const style = element.getAttribute("style");
+  const match = style.match(/url\(['"]([^)]+)['"]\)/);
+  match && enqueue(match[1]);
+});
 
-false &&
-  [...document.querySelectorAll("a[href]")].forEach(element => {
-    const href = element.getAttribute("href");
-    const ext = getImageExtension(href);
-    ext && enqueue(href);
-  });
+[...document.querySelectorAll("a[href]")].forEach(element => {
+  const href = element.getAttribute("href");
+  const ext = getImageExtension(href);
+  ext && enqueue(href);
+});
 
 getUrlsFromDocumentStylesheets(document).forEach(url => {
   console.log(url);
