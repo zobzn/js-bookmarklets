@@ -1,3 +1,1 @@
-(function(l) {
-  l.href = "//" + l.host;
-})(location);
+location.href = "//" + location.host;

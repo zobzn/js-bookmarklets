@@ -1,91 +1,53 @@
-/**
- * @todo jest
- * @todo eslint
- * @todo picture > source[srcset]
- * @todo img[srcset]
- * @todo url() in stylesheets
- */
-(document => {
-  const imagesQueue = new Set();
-  const imagesSuccess = new Set();
-  const imagesFail = new Set();
-  const minWidth = 10;
-  const minHeight = 10;
-  const previewWidth = 200;
-  const previewHeight = 200;
-  const imageExtensionsRegExp = /(?:image\/|\.)(gif|jpg|jpeg|png|webp|tiff|svg)(?:\?|\#|$)/i;
+// [x] jest
+// [ ] eslint
+// [ ] picture > source[srcset]
+// [ ] img[srcset]
+// [x] url() in stylesheets
 
-  function xhrresponseheader(surl) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("HEAD", surl);
-    //xhr.withCredentials = false;
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        contenttype = xhr.getResponseHeader("Content-Type");
-        console.log("Content Type (XHR): ", contenttype);
-      }
-    };
-    xhr.send();
+import getUrlsFromDocumentStylesheets from "./lib/get-urls-from-document-stylesheets";
+
+const imagesQueue = new Set();
+const imagesSuccess = new Set();
+const imagesFail = new Set();
+const minWidth = 10;
+const minHeight = 10;
+const previewWidth = 200;
+const previewHeight = 200;
+const imageExtensionsRegExp = /(?:image\/|\.)(gif|jpg|jpeg|png|webp|tiff|svg|ico|cur)(?:\?|\#|$)/i;
+
+const getImageExtension = src => {
+  const ext = src.match(imageExtensionsRegExp);
+  return ext ? ext[1] : null;
+};
+
+const suggestFilename = src => {
+  return src
+    .split(/\?|#/)
+    .shift()
+    .replace(/^\/+|\/+$/, "")
+    .split("/")
+    .pop();
+};
+
+const sortBySizeDesc = (a, b) => {
+  if (a.width > b.width) {
+    return -1;
+  } else if (a.width < b.width) {
+    return 1;
+  } else if (a.height > b.height) {
+    return -1;
+  } else if (a.height < b.height) {
+    return 1;
+  } else {
+    return 0;
   }
+};
 
-  function fetchresponseheader(surl) {
-    fetch(surl, { method: "HEAD" }).then(function(response) {
-      contenttype = response.headers.get("content-type");
-      console.log("Content Type (FETCH): ", contenttype);
-    });
-  }
-
-  (() => {
-    // const sheets = document.styleSheets;
-    // for (var i in sheets) {
-    //   var rules = sheets[i].rules || sheets[i].cssRules;
-    //   for (var r in rules) {
-    //     console.log(rules[r]);
-    //   }
-    // }
-    // return result;
-
-    [...document.styleSheets].forEach(sheet => {
-      let rules = [];
-      try {
-        rules = [...(sheet.rules || sheet.cssRules)];
-      } catch (e) {}
-
-      rules.forEach(rule => {
-        if (rule.cssText) console.log(rule.cssText);
-      });
-    });
-  })();
-
-  const getImageExtension = src => {
-    const ext = src.match(imageExtensionsRegExp);
-    return ext ? ext[1] : null;
-  };
-
-  const suggestFilename = src => {
-    return src
-      .split(/\?|#/)
-      .shift()
-      .replace(/^\/+|\/+$/, "")
-      .split("/")
-      .pop();
-  };
-
-  const sortBySizeDesc = (a, b) => {
-    if (a.width > b.width) {
-      return -1;
-    } else if (a.width < b.width) {
-      return 1;
-    } else if (a.height > b.height) {
-      return -1;
-    } else if (a.height < b.height) {
-      return 1;
-    } else {
-      return 0;
+const styles = `
+    body {
+      background: #fafafa;
     }
-  };
 
-  const styles = `
     .item {
         font: 12px/18px Arias, sans-serif;
         width: ${previewWidth}px;
@@ -132,17 +94,17 @@
     }
   `;
 
-  const render = () => {
-    const items = [...imagesSuccess.values()]
-      .filter(({ width, height }) => width >= minWidth && height >= minHeight)
-      .sort(sortBySizeDesc)
-      .map(({ src, width, height }) => {
-        const ext = getImageExtension(src);
-        const fileName = suggestFilename(src);
+const render = () => {
+  const items = [...imagesSuccess.values()]
+    .filter(({ width, height }) => width >= minWidth && height >= minHeight)
+    .sort(sortBySizeDesc)
+    .map(({ src, width, height }) => {
+      const ext = getImageExtension(src);
+      const fileName = suggestFilename(src);
 
-        const sizeAndExt = width + "x" + height + (ext ? ", " + ext : "");
+      const sizeAndExt = width + "x" + height + (ext ? ", " + ext : "");
 
-        return `
+      return `
             <div class="item" title="${fileName}">
                 <a target="_top" href="${src}">
                     <img src="${src}" alt="" />
@@ -151,71 +113,79 @@
                 <div class="item__size">${sizeAndExt}</div>
             </div>
         `;
-      });
+    });
 
-    const html = []
-      .concat([`<!doctype html>`])
-      .concat([`<style>${styles}</style>`])
-      .concat(items)
-      .join("\n");
+  const html = []
+    .concat([`<!doctype html>`])
+    .concat([`<style>${styles}</style>`])
+    .concat(items)
+    .join("\n");
 
-    document.open();
-    document.write(html);
-    document.close();
-  };
+  document.open();
+  document.write(html);
+  document.close();
+};
 
-  const onError = function() {
-    const { src } = this;
+const onError = function() {
+  const { src } = this;
 
-    imagesFail.add({ src });
+  imagesFail.add({ src });
 
-    if (imagesFail.size + imagesSuccess.size) {
-      setTimeout(render, 0);
-    }
-  };
+  if (imagesFail.size + imagesSuccess.size) {
+    setTimeout(render, 0);
+  }
+};
 
-  const onLoad = function() {
-    const { src, naturalWidth: width, naturalHeight: height } = this;
+const onLoad = function() {
+  const { src, naturalWidth: width, naturalHeight: height } = this;
 
-    imagesSuccess.add({ src, width, height });
+  imagesSuccess.add({ src, width, height });
 
-    if (imagesFail.size + imagesSuccess.size) {
-      setTimeout(render, 0);
-    }
-  };
+  if (imagesFail.size + imagesSuccess.size) {
+    setTimeout(render, 0);
+  }
+};
 
-  const doDownload = src => {
-    const link = document.createElement("a");
-    link.download = "";
-    link.href = src;
-    link.click();
-  };
+const doDownload = src => {
+  const link = document.createElement("a");
+  link.download = "";
+  link.href = src;
+  link.click();
+};
 
-  const enqueue = src => {
-    if (location.href == src) {
-      doDownload(src);
-    } else if (!imagesQueue.has(src)) {
-      imagesQueue.add(src);
-      const img = new Image();
-      img.onerror = onError;
-      img.onload = onLoad;
-      img.src = src;
-    }
-  };
+const enqueue = src => {
+  if (location.href == src) {
+    doDownload(src);
+  } else if (!imagesQueue.has(src)) {
+    imagesQueue.add(src);
+    const img = new Image();
+    img.onerror = onError;
+    img.onload = onLoad;
+    img.src = src;
+  }
+};
 
+false &&
   [...document.querySelectorAll("img[src]")].forEach(element => {
     enqueue(element.getAttribute("src"));
   });
 
+false &&
   [...document.querySelectorAll('[style*="url("]')].forEach(element => {
     const style = element.getAttribute("style");
     const match = style.match(/url\(['"]([^)]+)['"]\)/);
     match && enqueue(match[1]);
   });
 
+false &&
   [...document.querySelectorAll("a[href]")].forEach(element => {
     const href = element.getAttribute("href");
     const ext = getImageExtension(href);
     ext && enqueue(href);
   });
-})(document);
+
+getUrlsFromDocumentStylesheets(document).forEach(url => {
+  console.log(url);
+  const ext = getImageExtension(url);
+  ext && enqueue(url);
+});

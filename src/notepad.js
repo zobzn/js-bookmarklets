@@ -1,3 +1,1 @@
-(function(w) {
-  w.open("data:text/html,<html contenteditable>", "notepad");
-})(window);
+window.open("data:text/html,<html contenteditable>", "notepad");

@@ -1,3 +1,1 @@
-(function(l) {
-  l.href = "//" + l.host + "/sitemap.xml";
-})(location);
+location.href = "//" + location.host + "/sitemap.xml";
