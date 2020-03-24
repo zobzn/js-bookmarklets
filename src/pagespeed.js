@@ -1,5 +1,5 @@
 ((l) => {
   l.href =
-    "https://webcache.googleusercontent.com/search?q=cache:" +
+    "https://developers.google.com/speed/pagespeed/insights/?url=" +
     encodeURIComponent(l.protocol + "//" + l.host + l.pathname + l.search);
 })(location);

@@ -1,12 +1,12 @@
 import "isomorphic-fetch";
 
 function xhrresponseheader(surl) {
-  var xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest();
   xhr.open("HEAD", surl);
   //xhr.withCredentials = false;
-  xhr.onreadystatechange = function() {
+  xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
-      contenttype = xhr.getResponseHeader("Content-Type");
+      const contenttype = xhr.getResponseHeader("Content-Type");
       console.log("Content Type (XHR): ", contenttype);
     }
   };
@@ -22,6 +22,6 @@ async function fetchresponseheader(surl) {
   }
 }
 
-export default url => {
+export default (url) => {
   return fetchresponseheader(url);
 };

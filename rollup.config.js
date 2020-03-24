@@ -3,11 +3,11 @@ import glob from "glob";
 
 const inputs = glob.sync("./src/*.js");
 
-export default inputs.map(input => ({
+export default inputs.map((input) => ({
   input,
   output: {
     dir: __dirname + "/res",
-    format: "iife"
+    format: "iife",
   },
-  plugins: [terser()]
+  plugins: [terser()],
 }));

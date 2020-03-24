@@ -1,6 +1,6 @@
 const re = /url\(['"]?([^'")]+)['"]?\)/g;
 
-const getUrlsFromStyleSheet = sheet => {
+const getUrlsFromStyleSheet = (sheet) => {
   let base = sheet.href;
   let result = [];
   let rules = [];
@@ -9,19 +9,19 @@ const getUrlsFromStyleSheet = sheet => {
     rules = [...(sheet.rules || sheet.cssRules)];
   } catch (e) {}
 
-  rules.forEach(rule => {
+  rules.forEach((rule) => {
     const css = rule.cssText;
-    const urls = [...css.matchAll(re)].map(i => "" + new URL(i[1], base));
+    const urls = [...css.matchAll(re)].map((i) => "" + new URL(i[1], base));
     result = result.concat(urls);
   });
 
   return [...new Set(result)];
 };
 
-export default document => {
+export default (document) => {
   let result = [];
 
-  [...(document.styleSheets || [])].forEach(sheet => {
+  [...(document.styleSheets || [])].forEach((sheet) => {
     result = result.concat(getUrlsFromStyleSheet(sheet));
   });
 

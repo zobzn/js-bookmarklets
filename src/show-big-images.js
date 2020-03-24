@@ -15,12 +15,12 @@ const previewWidth = 200;
 const previewHeight = 200;
 const imageExtensionsRegExp = /(?:image\/|\.)(gif|jpg|jpeg|png|webp|tiff|svg|ico|cur)(?:\?|\#|$)/i;
 
-const getImageExtension = src => {
+const getImageExtension = (src) => {
   const ext = src.match(imageExtensionsRegExp);
   return ext ? ext[1] : null;
 };
 
-const suggestFilename = src => {
+const suggestFilename = (src) => {
   return src
     .split(/\?|#/)
     .shift()
@@ -126,7 +126,7 @@ const render = () => {
   document.close();
 };
 
-const onError = function() {
+const onError = function () {
   const { src } = this;
 
   imagesFail.add({ src });
@@ -136,7 +136,7 @@ const onError = function() {
   }
 };
 
-const onLoad = function() {
+const onLoad = function () {
   const { src, naturalWidth: width, naturalHeight: height } = this;
 
   imagesSuccess.add({ src, width, height });
@@ -146,14 +146,14 @@ const onLoad = function() {
   }
 };
 
-const doDownload = src => {
+const doDownload = (src) => {
   const link = document.createElement("a");
   link.download = "";
   link.href = src;
   link.click();
 };
 
-const enqueue = src => {
+const enqueue = (src) => {
   if (location.href == src) {
     doDownload(src);
   } else if (!imagesQueue.has(src)) {
@@ -165,23 +165,23 @@ const enqueue = src => {
   }
 };
 
-[...document.querySelectorAll("img[src]")].forEach(element => {
+[...document.querySelectorAll("img[src]")].forEach((element) => {
   enqueue(element.getAttribute("src"));
 });
 
-[...document.querySelectorAll('[style*="url("]')].forEach(element => {
+[...document.querySelectorAll('[style*="url("]')].forEach((element) => {
   const style = element.getAttribute("style");
   const match = style.match(/url\(['"]([^)]+)['"]\)/);
   match && enqueue(match[1]);
 });
 
-[...document.querySelectorAll("a[href]")].forEach(element => {
+[...document.querySelectorAll("a[href]")].forEach((element) => {
   const href = element.getAttribute("href");
   const ext = getImageExtension(href);
   ext && enqueue(href);
 });
 
-getUrlsFromDocumentStylesheets(document).forEach(url => {
+getUrlsFromDocumentStylesheets(document).forEach((url) => {
   console.log(url);
   const ext = getImageExtension(url);
   ext && enqueue(url);

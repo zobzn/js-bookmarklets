@@ -1,8 +1,8 @@
 let src = document.cookie;
 let cookies = document.cookie
   .split(/;\s*/)
-  .map(c => decodeURIComponent(c.replace(/=.*/, "").trim()))
-  .filter(c => c != "");
+  .map((c) => decodeURIComponent(c.replace(/=.*/, "").trim()))
+  .filter((c) => c != "");
 let parts_host = window.location.hostname.split(".");
 let parts_path = location.pathname.split("/");
 let del = (n, d, p = "") => {
@@ -13,7 +13,7 @@ let del = (n, d, p = "") => {
   console.log((document.cookie = s));
 };
 
-cookies.forEach(c => {
+cookies.forEach((c) => {
   let d = [].concat(parts_host);
 
   while (d.length > 0) {
